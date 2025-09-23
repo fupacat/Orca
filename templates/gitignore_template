@@ -1,0 +1,51 @@
+# Orca Workflow Generated Files
+docs/tmp_*
+*.tmp
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Runtime and Build
+node_modules/
+dist/
+build/
+target/
+*.pyc
+__pycache__/
+
+# Environment and Config
+.env
+.env.local
+.env.production
+.env.staging
+
+# Package Manager
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Claude Code Local Settings (keep project settings)
+.claude/settings.local.json
+
+# Serena Local Files
+.serena/logs/
+.serena/cache/

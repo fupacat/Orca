@@ -1,0 +1,8 @@
+# Quick Dependency Check
+
+{
+  "name": "CheckDependencies",
+  "description": "Quick standalone check to verify Orca system dependencies are available when Claude Code is first opened.",
+  "parameters": [],
+  "prompt": "Perform a quick dependency check for the Orca workflow orchestration system. This should be run when Claude Code is first opened to ensure all required MCP servers are available.\n\n**Quick Check Steps:**\n\n1. **Test Archon MCP Server**:\n   ```\n   mcp__archon__health_check()\n   ```\n   Expected: Success response with health status\n\n2. **Test Serena MCP Server**:\n   ```\n   # Test basic connectivity\n   list_dir(\"./\")\n   \n   # Verify project configuration\n   get_current_config()\n   \n   # Ensure project is properly activated\n   activate_project($(pwd))\n   ```\n   Expected: Successful file system access and project activation\n\n3. **Report Results**:\n   - ✅ **All Systems Ready**: Both Archon and Serena are operational\n   - ⚠️ **Partial Availability**: Report which system is unavailable\n   - ❌ **Systems Unavailable**: Provide quick fix commands\n\n**Quick Fix Commands (if needed):**\n\n- **Archon**: Start the Archon server or check http://localhost:8051/mcp\n- **Serena**: Run `claude mcp list` and restart if needed\n\n**Success Message**: 'Orca dependencies verified - ready for workflow operations'\n**Failure Message**: 'Dependency check failed - see troubleshooting steps above'\n\nThis check should complete in under 10 seconds and give immediate feedback on system readiness."
+}

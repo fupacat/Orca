@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp:*)",
+      "Bash(uvx:*)",
+      "mcp__serena__write_memory",
+      "mcp__archon__manage_project"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

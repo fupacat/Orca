@@ -1,0 +1,3 @@
+project_name: Orca
+language: bash
+description: Multi-agent workflow orchestration system for software development

@@ -1,0 +1,121 @@
+# GitHub Actions CI/CD Workflow Template
+# This will be customized based on the technology stack chosen during Architecture phase
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  # Environment variables to be customized based on project needs
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.9'
+
+jobs:
+  # Job configurations will be customized based on chosen technology stack
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Matrix will be populated based on Architecture phase decisions
+        os: [ubuntu-latest]
+        # node-version: [16, 18, 20]  # For Node.js projects
+        # python-version: [3.8, 3.9, 3.10]  # For Python projects
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup environment
+      # Setup steps will be customized based on technology stack
+      run: echo "Setup steps to be defined during Architecture phase"
+
+    - name: Install dependencies
+      # Dependency installation will be customized
+      run: echo "Dependency installation to be defined during Architecture phase"
+
+    - name: Run linting
+      # Linting configuration will be customized
+      run: echo "Linting configuration to be defined during Architecture phase"
+
+    - name: Run tests
+      # Test execution will be customized
+      run: echo "Test execution to be defined during Architecture phase"
+
+    - name: Generate coverage report
+      # Coverage reporting will be customized
+      run: echo "Coverage reporting to be defined during Architecture phase"
+
+    - name: Upload coverage to Codecov
+      # Coverage upload will be customized if needed
+      if: false  # Enable during Architecture phase if coverage tracking desired
+      uses: codecov/codecov-action@v3
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run security audit
+      # Security scanning will be customized based on technology stack
+      run: echo "Security audit to be defined during Architecture phase"
+
+    - name: Dependency vulnerability scan
+      # Vulnerability scanning will be customized
+      run: echo "Vulnerability scanning to be defined during Architecture phase"
+
+  build:
+    needs: [test, security]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup build environment
+      # Build environment setup will be customized
+      run: echo "Build environment setup to be defined during Architecture phase"
+
+    - name: Build application
+      # Build process will be customized based on technology stack
+      run: echo "Build process to be defined during Architecture phase"
+
+    - name: Build artifacts
+      # Artifact handling will be customized
+      run: echo "Artifact creation to be defined during Architecture phase"
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to staging
+      # Deployment steps will be customized based on hosting choice
+      run: echo "Deployment configuration to be defined during Implementation Planning phase"
+
+    - name: Run smoke tests
+      # Smoke testing will be customized
+      run: echo "Smoke testing to be defined during Implementation Planning phase"
+
+    - name: Deploy to production
+      # Production deployment will be customized
+      if: success()
+      run: echo "Production deployment to be defined during Implementation Planning phase"
+
+# Additional workflow configurations:
+# - Notifications (Slack, email, etc.)
+# - Performance testing
+# - Database migrations
+# - Container building and publishing
+# - Infrastructure as code
+# All to be defined based on project requirements during Architecture phase
