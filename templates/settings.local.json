@@ -5,13 +5,13 @@
       "Bash(uvx:*)",
       "mcp__archon",
       "mcp__serena",
-      "WebSearch",
-      "Read(//c/Users/eolun/Projects/**)",
-      "Bash(ORCA_DIR=\"/c/Users/eolun/projects/Orca\")",
-      "Bash(cp:*)",
-      "Bash(echo:*)"
+      "WebSearch"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "archon",
+    "serena"
+  ]
 }

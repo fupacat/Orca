@@ -1,16 +1,16 @@
+---
+argument-hint: [project_description] [constraints] [clarification_mode]
+description: Execute Orca workflow on existing project
+---
+
 # /orca-start
 
-Bootstrap and orchestrate the full stateless Orca software development workflow.
+Bootstrap and orchestrate the full stateless Orca software development workflow using these parameters: $ARGUMENTS
 
-## Usage
-```
-/orca-start <project_description> [constraints] [clarification_mode]
-```
-
-## Parameters
-- **project_description** (required): Short description of the software/tool/feature to be developed
-- **constraints** (optional): Development constraints, e.g., "solo developer, free tools, Windows platform"
-- **clarification_mode** (optional): true/false - whether to pause for user clarification on ambiguous requirements (default: true)
+Parse the arguments as:
+1. project_description (required): Short description of the software/tool/feature to be developed
+2. constraints (optional, default: "Solo developer, free tools"): Development constraints
+3. clarification_mode (optional, default: true): Whether to pause for user clarification on ambiguous requirements
 
 ## Examples
 ```

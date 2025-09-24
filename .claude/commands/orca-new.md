@@ -78,6 +78,22 @@ cp "$ORCA_DIR/archon_rules.md" . || echo "Warning: Failed to copy archon_rules.m
 echo "Copying template files..."
 if [ -d "$ORCA_DIR/templates" ]; then
     cp -r "$ORCA_DIR/templates/"* templates/ || echo "Warning: Failed to copy some template files"
+
+    # Copy settings.local.json to .claude/ directory for Claude Code configuration
+    if [ -f "templates/settings.local.json" ]; then
+        cp templates/settings.local.json .claude/settings.local.json || echo "Warning: Failed to copy settings.local.json to .claude/ directory"
+        echo "✅ settings.local.json configured for project"
+    else
+        echo "⚠️  Warning: settings.local.json not found in templates"
+    fi
+
+    # Copy .mcp.json to project root for automatic MCP server configuration
+    if [ -f "templates/.mcp.json" ]; then
+        cp templates/.mcp.json .mcp.json || echo "Warning: Failed to copy .mcp.json to project root"
+        echo "✅ .mcp.json configured for automatic MCP setup"
+    else
+        echo "⚠️  Warning: .mcp.json not found in templates"
+    fi
 else
     echo "Warning: Templates directory not found at $ORCA_DIR/templates"
 fi
@@ -93,15 +109,32 @@ fi
 echo "File copying completed."
 ```
 
-## Step 3: Copy Template Files (Do NOT Process)
-Copy template files as-is for the project's Claude instance to process:
+## Step 3: Generate Project-Specific CLAUDE.md
+Generate CLAUDE.md from template with project-specific values:
+```bash
+# Generate CLAUDE.md from template
+if [ -f "templates/CLAUDE_template.md" ]; then
+    echo "Generating project-specific CLAUDE.md..."
+
+    # Process template variables
+    sed "s/{project_name}/${PROJECT_NAME}/g; s/{project_description}/${3:-Project created with Orca}/g; s/{constraints}/${4:-Solo developer, free tools}/g" \
+        templates/CLAUDE_template.md > CLAUDE.md
+
+    echo "✅ CLAUDE.md generated successfully"
+else
+    echo "⚠️  Warning: CLAUDE_template.md not found, CLAUDE.md not generated"
+fi
+```
+
+## Step 4: Copy Template Files (Do NOT Process)
+Copy remaining template files as-is for the project's Claude instance to process:
 ```bash
 # Copy templates without processing - let the project's workflow handle generation
 # The templates will be processed when /orca-start or /orca-workflow is run in the new project
 echo "Template files copied. Run /orca-start in the new project to generate project-specific files."
 ```
 
-## Step 4: Verify Setup and Display Results
+## Step 5: Verify Setup and Display Results
 ```bash
 # Verify critical files were copied
 echo "🔍 Verifying project setup..."
@@ -109,6 +142,9 @@ echo "🔍 Verifying project setup..."
 MISSING_FILES=()
 [ ! -f "start.md" ] && MISSING_FILES+=("start.md")
 [ ! -f "archon_rules.md" ] && MISSING_FILES+=("archon_rules.md")
+[ ! -f "CLAUDE.md" ] && MISSING_FILES+=("CLAUDE.md")
+[ ! -f ".claude/settings.local.json" ] && MISSING_FILES+=(".claude/settings.local.json")
+[ ! -f ".mcp.json" ] && MISSING_FILES+=(".mcp.json")
 [ ! -d "templates" ] && MISSING_FILES+=("templates/")
 [ ! -d ".claude/commands" ] && MISSING_FILES+=(".claude/commands/")
 

@@ -14,9 +14,15 @@ This file defines the specialized agents used in the software development workfl
 **Output**: discovery.md
 **Specialization**: Domain analysis, stakeholder identification, context gathering, problem space exploration
 
-## Requirements Agent
-**Role**: Transforms discovery insights into detailed, actionable requirements
+## Research Agent
+**Role**: Conducts deep research and analysis of the problem domain, existing solutions, and technical approaches
 **Input**: discovery.md, project description, constraints
+**Output**: research.md
+**Specialization**: Domain research, competitive analysis, technical investigation, pattern recognition, solution synthesis
+
+## Requirements Agent
+**Role**: Transforms discovery insights and research findings into detailed, actionable requirements
+**Input**: discovery.md, research.md, project description, constraints
 **Output**: requirements.md
 **Specialization**: Requirements engineering, specification writing, acceptance criteria definition
 
@@ -43,3 +49,9 @@ This file defines the specialized agents used in the software development workfl
 **Input**: task_review.md, architecture.md
 **Output**: plan.md
 **Specialization**: Project planning, implementation strategy, milestone definition, execution sequencing
+
+## Workflow Review Agent
+**Role**: Conducts comprehensive review of the entire multi-agent workflow and its outputs
+**Input**: All workflow artifacts (discovery.md, research.md, requirements.md, tasks.md, architecture.md, tech_stack.md, task_review.md, plan.md)
+**Output**: workflow_review.md
+**Specialization**: Systems thinking, process optimization, quality assurance, workflow analysis, cross-phase validation

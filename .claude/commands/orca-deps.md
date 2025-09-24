@@ -1,14 +1,10 @@
+---
+description: Quick MCP server validation for Orca system
+---
+
 # /orca-deps
 
-Quick dependency check to verify Orca system MCP servers are available.
-
-## Usage
-```
-/orca-deps
-```
-
-## Description
-Performs a quick dependency check for the Orca workflow orchestration system. This should be run when Claude Code is first opened to ensure all required MCP servers are available.
+Perform a quick dependency check for the Orca workflow orchestration system. Check that both Archon and Serena MCP servers are available and operational.
 
 ## What it does
 1. **Test Archon MCP Server**: Verifies connection to http://localhost:8051/mcp

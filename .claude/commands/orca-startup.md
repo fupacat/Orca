@@ -8,11 +8,11 @@ Comprehensive startup health check for Orca workflow system including project in
 ```
 
 ## Description
-Verifies that Archon and Serena MCP servers are available and properly configured, plus checks that the current project is initialized in both systems before running any workflows.
+Verifies that Archon and Serena MCP servers are available and properly configured, plus checks that the current project is initialized in both systems before running any workflows. **Automatically configures missing MCP servers and project files.**
 
 ## What it does
-1. **Check MCP Server Connectivity**: Verifies both Archon and Serena are connected and functional
-2. **Validate Project Configuration**: Confirms project files and configurations are in place
+1. **Check and Configure MCP Servers**: Verifies connectivity and automatically adds missing servers
+2. **Setup Project Configuration**: Copies `.claude.json` from templates if missing
 3. **Test Basic Functionality**: Validates session management and file system access
 4. **Verify Project Initialization**: Checks if current project exists in both Archon and Serena
 5. **Report Comprehensive Status**: Detailed feedback with specific fix instructions
