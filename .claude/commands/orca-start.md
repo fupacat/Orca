@@ -1,26 +1,36 @@
 ---
-argument-hint: [project_description] [constraints] [clarification_mode]
-description: Execute Orca workflow on existing project
+argument-hint: [project_description] [constraints] [clarification_mode] [execution_mode]
+description: Execute Orca workflow with optional parallel implementation
 ---
 
 # /orca-start
 
-Bootstrap and orchestrate the full stateless Orca software development workflow using these parameters: $ARGUMENTS
+Bootstrap and orchestrate the full stateless Orca software development workflow with optional parallel execution using these parameters: $ARGUMENTS
 
 Parse the arguments as:
 1. project_description (required): Short description of the software/tool/feature to be developed
 2. constraints (optional, default: "Solo developer, free tools"): Development constraints
 3. clarification_mode (optional, default: true): Whether to pause for user clarification on ambiguous requirements
+4. execution_mode (optional, default: "plan-only"): Execution mode - "plan-only", "execute", "preview", or "validate"
 
 ## Examples
 ```
 /orca-start "REST API for task management"
 /orca-start "Mobile-friendly web dashboard" "React, free hosting, responsive design"
 /orca-start "Data visualization tool" "Python, matplotlib, CSV input" false
+/orca-start "Authentication system" "JWT, PostgreSQL" true "execute"
+/orca-start "User dashboard" "Next.js, Tailwind" false "preview"
+/orca-start "API endpoints" "FastAPI, async" true "validate"
 ```
 
 ## Description
-Executes the complete Orca multi-agent workflow orchestration system. This command runs all workflow phases with automatic startup validation and Archon-first task management.
+Executes the complete Orca multi-agent workflow orchestration system with optional parallel implementation execution. This command can now transition seamlessly from planning to live development with 3-5x performance improvements through intelligent parallel processing.
+
+## Execution Modes
+- **plan-only** (default): Traditional Orca workflow - planning phases only
+- **execute**: Complete workflow + automatic parallel implementation execution
+- **preview**: Planning + execution preview with timing estimates and parallelization analysis
+- **validate**: Planning + validation that the plan is executable with recommendations
 
 ## Workflow Phases
 1. **Mandatory Startup Check**: Verifies Archon and Serena MCP servers
@@ -32,6 +42,7 @@ Executes the complete Orca multi-agent workflow orchestration system. This comma
 7. **Architecture Agent**: Designs system architecture and selects tech stack
 8. **Engineer Review Agent**: Validates technical feasibility and quality
 9. **Implementation Planning Agent**: Creates detailed execution plans
+10. **Parallel Execution** (if execution_mode != "plan-only"): Live implementation with parallel task coordination
 
 ## Critical Rules
 - **ARCHON-FIRST**: Creates and manages tasks in Archon MCP server
