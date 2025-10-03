@@ -1,0 +1,341 @@
+name: Orca-Archon Integration
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+    branches: [develop, main]
+  pull_request_review:
+    types: [submitted]
+  push:
+    branches: [develop, main]
+
+env:
+  ARCHON_SERVER_URL: http://localhost:8051/mcp
+  TASK_ID_PATTERN: 'TASK-[0-9]{3}'
+
+jobs:
+  # Job 1: Validate TASK-XXX in PR
+  validate-task-reference:
+    name: Validate TASK-XXX Reference
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    outputs:
+      task_id: ${{ steps.extract.outputs.task_id }}
+      has_task: ${{ steps.extract.outputs.has_task }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract TASK-XXX from PR
+        id: extract
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_BODY="${{ github.event.pull_request.body }}"
+          PR_BRANCH="${{ github.event.pull_request.head.ref }}"
+
+          echo "PR Title: $PR_TITLE"
+          echo "PR Branch: $PR_BRANCH"
+
+          # Check PR title for TASK-XXX
+          if echo "$PR_TITLE" | grep -qE "$TASK_ID_PATTERN"; then
+            TASK_ID=$(echo "$PR_TITLE" | grep -oE "$TASK_ID_PATTERN" | head -n 1)
+            echo "✓ Found TASK-XXX in PR title: $TASK_ID"
+            echo "task_id=$TASK_ID" >> $GITHUB_OUTPUT
+            echo "has_task=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check PR body for TASK-XXX
+          if echo "$PR_BODY" | grep -qE "$TASK_ID_PATTERN"; then
+            TASK_ID=$(echo "$PR_BODY" | grep -oE "$TASK_ID_PATTERN" | head -n 1)
+            echo "✓ Found TASK-XXX in PR body: $TASK_ID"
+            echo "task_id=$TASK_ID" >> $GITHUB_OUTPUT
+            echo "has_task=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check branch name for TASK-XXX
+          if echo "$PR_BRANCH" | grep -qE "$TASK_ID_PATTERN"; then
+            TASK_ID=$(echo "$PR_BRANCH" | grep -oE "$TASK_ID_PATTERN" | head -n 1)
+            echo "✓ Found TASK-XXX in branch name: $TASK_ID"
+            echo "task_id=$TASK_ID" >> $GITHUB_OUTPUT
+            echo "has_task=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # No TASK-XXX found - check if it's required
+          if [[ "$PR_BRANCH" == feature/* ]] || [[ "$PR_BRANCH" == fix/* ]] || [[ "$PR_BRANCH" == refactor/* ]]; then
+            echo "❌ ERROR: TASK-XXX required for feature/fix/refactor branches"
+            echo "has_task=false" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            # Not required for docs/chore branches
+            echo "⚠️  TASK-XXX not found, but not required for this branch type"
+            echo "has_task=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+      - name: Validate TASK-XXX in commits
+        if: steps.extract.outputs.has_task == 'true'
+        run: |
+          TASK_ID="${{ steps.extract.outputs.task_id }}"
+          echo "Validating commits contain $TASK_ID..."
+
+          # Get all commits in PR
+          git fetch origin ${{ github.base_ref }}
+          COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --pretty=format:"%H %s")
+
+          INVALID_COMMITS=0
+          while IFS= read -r commit_line; do
+            COMMIT_HASH=$(echo "$commit_line" | awk '{print $1}')
+            COMMIT_MSG=$(echo "$commit_line" | cut -d' ' -f2-)
+
+            # Skip merge commits
+            if echo "$COMMIT_MSG" | grep -q "^Merge"; then
+              continue
+            fi
+
+            # Allow docs/chore/test without TASK-XXX
+            if echo "$COMMIT_MSG" | grep -qE "^(docs|chore|test|style):"; then
+              continue
+            fi
+
+            # Check for any TASK-XXX (not just the PR's task)
+            if ! echo "$COMMIT_MSG" | grep -qE "$TASK_ID_PATTERN"; then
+              echo "❌ Missing TASK-XXX: ${COMMIT_HASH:0:7} - $COMMIT_MSG"
+              INVALID_COMMITS=$((INVALID_COMMITS + 1))
+            fi
+          done <<< "$COMMITS"
+
+          if [ $INVALID_COMMITS -gt 0 ]; then
+            echo "❌ Found $INVALID_COMMITS commit(s) without TASK-XXX"
+            exit 1
+          fi
+
+          echo "✅ All commits have TASK-XXX references"
+
+  # Job 2: Check commit message format
+  validate-commit-messages:
+    name: Validate Commit Messages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate commit message format
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --pretty=format:"%s")
+
+          INVALID_FORMAT=0
+          while IFS= read -r commit_msg; do
+            # Skip merge commits
+            if echo "$commit_msg" | grep -q "^Merge"; then
+              continue
+            fi
+
+            # Check length (max 72 chars)
+            if [ ${#commit_msg} -gt 72 ]; then
+              echo "❌ Commit message too long (${#commit_msg} chars): $commit_msg"
+              INVALID_FORMAT=$((INVALID_FORMAT + 1))
+            fi
+
+            # Check for period at end
+            if echo "$commit_msg" | grep -q '\.$'; then
+              echo "❌ Commit message ends with period: $commit_msg"
+              INVALID_FORMAT=$((INVALID_FORMAT + 1))
+            fi
+          done <<< "$COMMITS"
+
+          if [ $INVALID_FORMAT -gt 0 ]; then
+            echo "❌ Found $INVALID_FORMAT commit(s) with format issues"
+            exit 1
+          fi
+
+          echo "✅ All commit messages follow format guidelines"
+
+  # Job 3: Post test results (placeholder for Archon integration)
+  post-test-results:
+    name: Post Test Results to Archon
+    runs-on: ubuntu-latest
+    needs: [validate-task-reference]
+    if: github.event_name == 'pull_request' && needs.validate-task-reference.outputs.has_task == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run tests
+        id: tests
+        continue-on-error: true
+        run: |
+          # Install dependencies if needed
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+          # Run tests
+          if command -v pytest >/dev/null 2>&1; then
+            python -m pytest tests/ -v --tb=short > test_results.txt 2>&1 || true
+            TEST_EXIT_CODE=$?
+            echo "exit_code=$TEST_EXIT_CODE" >> $GITHUB_OUTPUT
+          else
+            echo "Pytest not found, skipping tests"
+            echo "exit_code=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment test results on PR
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const taskId = '${{ needs.validate-task-reference.outputs.task_id }}';
+            const exitCode = '${{ steps.tests.outputs.exit_code }}';
+
+            let testResults = 'No test output available';
+            try {
+              testResults = fs.readFileSync('test_results.txt', 'utf8');
+            } catch (e) {
+              testResults = 'Could not read test results';
+            }
+
+            const status = exitCode === '0' ? '✅ PASSED' : '❌ FAILED';
+            const body = `## 🧪 Test Results for ${taskId}
+
+**Status:** ${status}
+
+<details>
+<summary>Test Output</summary>
+
+\`\`\`
+${testResults.substring(0, 5000)}
+\`\`\`
+
+</details>
+
+---
+*Automated test results from Orca-Archon Integration*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      # Future: Post to Archon MCP server
+      # This would require Archon API access from GitHub Actions
+      # - name: Update Archon task with test results
+      #   run: |
+      #     TASK_ID="${{ needs.validate-task-reference.outputs.task_id }}"
+      #     curl -X POST "$ARCHON_SERVER_URL/task-update" \
+      #       -H "Content-Type: application/json" \
+      #       -d "{\"task_id\": \"$TASK_ID\", \"test_status\": \"${{ steps.tests.outputs.exit_code }}\"}"
+
+  # Job 4: Branch naming validation
+  validate-branch-name:
+    name: Validate Branch Naming Convention
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Check branch name format
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          echo "Validating branch name: $BRANCH_NAME"
+
+          # Valid patterns:
+          # - feature/TASK-XXX-description
+          # - fix/TASK-XXX-description
+          # - hotfix/TASK-XXX-description
+          # - refactor/TASK-XXX-description
+          # - docs/* (no TASK required)
+          # - chore/* (no TASK required)
+
+          if [[ "$BRANCH_NAME" =~ ^(feature|fix|hotfix|refactor)/TASK-[0-9]{3}-.+ ]]; then
+            echo "✅ Branch name follows convention"
+            exit 0
+          elif [[ "$BRANCH_NAME" =~ ^(docs|chore)/.+ ]]; then
+            echo "✅ Branch name valid (docs/chore type)"
+            exit 0
+          elif [[ "$BRANCH_NAME" =~ ^(feature|fix|refactor)/ ]]; then
+            echo "❌ Feature/fix/refactor branches must include TASK-XXX"
+            echo "Expected format: feature/TASK-XXX-description"
+            exit 1
+          else
+            echo "⚠️  Branch name doesn't follow recommended convention"
+            echo "Recommended: <type>/TASK-XXX-description"
+            echo "Types: feature, fix, hotfix, refactor, docs, chore"
+            # Don't fail for other branch types
+            exit 0
+          fi
+
+  # Job 5: Auto-label based on TASK-XXX (future enhancement)
+  auto-label:
+    name: Auto-label PR based on Task
+    runs-on: ubuntu-latest
+    needs: [validate-task-reference]
+    if: github.event_name == 'pull_request' && needs.validate-task-reference.outputs.has_task == 'true'
+
+    steps:
+      - name: Add labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const taskId = '${{ needs.validate-task-reference.outputs.task_id }}';
+            const branch = '${{ github.event.pull_request.head.ref }}';
+
+            let labels = [taskId];
+
+            // Add type label based on branch
+            if (branch.startsWith('feature/')) labels.push('enhancement');
+            if (branch.startsWith('fix/')) labels.push('bug');
+            if (branch.startsWith('hotfix/')) labels.push('hotfix');
+            if (branch.startsWith('refactor/')) labels.push('refactor');
+            if (branch.startsWith('docs/')) labels.push('documentation');
+
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: labels
+            });
+
+            console.log(`Added labels: ${labels.join(', ')}`);
+
+  # Job 6: Validate PR is up-to-date with target branch
+  check-branch-sync:
+    name: Check Branch is Up-to-date
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if branch is behind
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          BEHIND_COUNT=$(git rev-list --count HEAD..origin/${{ github.base_ref }})
+
+          if [ "$BEHIND_COUNT" -gt 0 ]; then
+            echo "⚠️  Branch is $BEHIND_COUNT commit(s) behind ${{ github.base_ref }}"
+            echo "::warning::Branch is behind target. Consider rebasing."
+          else
+            echo "✅ Branch is up-to-date with ${{ github.base_ref }}"
+          fi
