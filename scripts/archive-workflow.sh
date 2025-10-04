@@ -51,8 +51,18 @@ main() {
     local plan_files=$(detect_artifacts "*_impl_plan.md")
     local exec_files=$(detect_artifacts "execute_*.py")
 
-    local total_count=0
-    total_count=$(($(echo "$feature_files" | grep -c . || echo 0) + $(echo "$impl_files" | grep -c . || echo 0) + $(echo "$plan_files" | grep -c . || echo 0) + $(echo "$exec_files" | grep -c . || echo 0)))
+    # Count artifacts (handle empty strings)
+    local feature_count=0
+    local impl_count=0
+    local plan_count=0
+    local exec_count=0
+
+    [ -n "$feature_files" ] && feature_count=$(echo "$feature_files" | wc -l)
+    [ -n "$impl_files" ] && impl_count=$(echo "$impl_files" | wc -l)
+    [ -n "$plan_files" ] && plan_count=$(echo "$plan_files" | wc -l)
+    [ -n "$exec_files" ] && exec_count=$(echo "$exec_files" | wc -l)
+
+    local total_count=$((feature_count + impl_count + plan_count + exec_count))
 
     if [ "$total_count" -eq 0 ]; then
         echo -e "${GREEN}✓ No workflow artifacts found in root directory${NC}"
