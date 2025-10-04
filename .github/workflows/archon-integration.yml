@@ -31,11 +31,11 @@ jobs:
 
       - name: Extract TASK-XXX from PR
         id: extract
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          PR_BODY="${{ github.event.pull_request.body }}"
-          PR_BRANCH="${{ github.event.pull_request.head.ref }}"
-
           echo "PR Title: $PR_TITLE"
           echo "PR Branch: $PR_BRANCH"
 
