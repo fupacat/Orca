@@ -13,6 +13,11 @@ env:
   ARCHON_SERVER_URL: http://localhost:8051/mcp
   TASK_ID_PATTERN: 'TASK-[0-9]{3}'
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 jobs:
   # Job 1: Validate TASK-XXX in PR
   validate-task-reference:
