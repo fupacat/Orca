@@ -25,6 +25,9 @@ Desktop.ini
 # Keep Claude Code project configuration
 # .claude/ is intentionally tracked for project setup
 
+# Keep Windsurf IDE configuration
+# .windsurf/ is intentionally tracked for project setup
+
 # MCP Server Data (runtime only)
 .serena/cache/
 .serena/temp/
