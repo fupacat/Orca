@@ -213,21 +213,16 @@ jobs:
             }
 
             const status = exitCode === '0' ? '✅ PASSED' : '❌ FAILED';
-            const body = `## 🧪 Test Results for ${taskId}
-
-**Status:** ${status}
-
-<details>
-<summary>Test Output</summary>
-
-\`\`\`
-${testResults.substring(0, 5000)}
-\`\`\`
-
-</details>
-
----
-*Automated test results from Orca-Archon Integration*`;
+            const body = '## 🧪 Test Results for ' + taskId + '\n\n' +
+              '**Status:** ' + status + '\n\n' +
+              '<details>\n' +
+              '<summary>Test Output</summary>\n\n' +
+              '```\n' +
+              testResults.substring(0, 5000) + '\n' +
+              '```\n\n' +
+              '</details>\n\n' +
+              '---\n' +
+              '*Automated test results from Orca-Archon Integration*';
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
