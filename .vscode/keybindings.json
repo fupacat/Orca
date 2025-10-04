@@ -1,0 +1,128 @@
+[
+  // Git Operations
+  {
+    "key": "ctrl+shift+g s",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Git: View Status"
+  },
+  {
+    "key": "ctrl+shift+g d",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Git: View Diff"
+  },
+  {
+    "key": "ctrl+shift+g l",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Git: View Log (Graph)"
+  },
+  {
+    "key": "ctrl+shift+g b",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Git: Create Branch"
+  },
+  {
+    "key": "ctrl+shift+g p",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Git: Push Current Branch"
+  },
+  {
+    "key": "ctrl+shift+g u",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Git: Pull with Rebase"
+  },
+  {
+    "key": "ctrl+shift+g f",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Git: Fetch All"
+  },
+  {
+    "key": "ctrl+shift+g c",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Git: Commit with Pre-commit Checks"
+  },
+  {
+    "key": "ctrl+shift+g a",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Git: Stage All Changes"
+  },
+
+  // Git Source Control Panel
+  {
+    "key": "ctrl+shift+g g",
+    "command": "workbench.view.scm"
+  },
+
+  // GitLens Commands
+  {
+    "key": "ctrl+shift+g h",
+    "command": "gitlens.toggleFileBlame"
+  },
+  {
+    "key": "ctrl+shift+g r",
+    "command": "gitlens.showQuickFileHistory"
+  },
+  {
+    "key": "ctrl+shift+g m",
+    "command": "gitlens.showQuickCommitDetails"
+  },
+
+  // Git Graph
+  {
+    "key": "ctrl+shift+g v",
+    "command": "git-graph.view"
+  },
+
+  // Quality Tasks
+  {
+    "key": "ctrl+shift+t t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Run Tests with Coverage"
+  },
+  {
+    "key": "ctrl+shift+t q",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Full Quality Check"
+  },
+  {
+    "key": "ctrl+shift+t f",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Format Code (Black)"
+  },
+  {
+    "key": "ctrl+shift+t l",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Lint Code (Ruff)"
+  },
+  {
+    "key": "ctrl+shift+t m",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Type Check (MyPy)"
+  },
+
+  // Archon-Git Integration
+  {
+    "key": "ctrl+shift+a t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Archon: Create Branch from Task"
+  },
+  {
+    "key": "ctrl+shift+a v",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Archon: View Task Details"
+  },
+  {
+    "key": "ctrl+shift+a u",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Archon: Update Task Status"
+  },
+  {
+    "key": "ctrl+shift+a f",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Archon: Finish Feature (Create PR)"
+  },
+  {
+    "key": "ctrl+shift+a x",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Archon: Extract TASK-XXX from Branch"
+  }
+]

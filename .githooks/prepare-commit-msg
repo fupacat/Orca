@@ -1,0 +1,85 @@
+#!/bin/bash
+#
+# Prepare commit message hook for Orca project
+# Auto-populates TASK-XXX from branch name
+#
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+# Colors
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+# Skip for merge/squash commits
+if [ "$COMMIT_SOURCE" = "merge" ] || [ "$COMMIT_SOURCE" = "squash" ]; then
+    exit 0
+fi
+
+# Get current branch name
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+
+# Extract TASK-XXX from branch name if present
+if [[ "$BRANCH_NAME" =~ (feature|fix|refactor|hotfix)/TASK-([0-9]{3}) ]]; then
+    TASK_ID="TASK-${BASH_REMATCH[2]}"
+
+    # Check if commit message already contains TASK-XXX
+    if ! grep -q "TASK-[0-9]\{3\}" "$COMMIT_MSG_FILE"; then
+        # Get existing commit message
+        EXISTING_MSG=$(cat "$COMMIT_MSG_FILE")
+
+        # Check if message is empty or just comments
+        if [ -z "$(echo "$EXISTING_MSG" | grep -v '^#')" ]; then
+            # Empty message - provide template
+            cat > "$COMMIT_MSG_FILE" <<EOF
+# Add commit message for $TASK_ID
+
+# Reference: $TASK_ID
+# Branch: $BRANCH_NAME
+#
+# Commit message format:
+#   <type>($TASK_ID): <subject>
+#
+#   <body>
+#
+# Types: feat, fix, docs, style, refactor, test, chore
+# Example: feat($TASK_ID): Implement parallel task orchestration
+#
+# Remember to keep subject under 50 chars, body lines under 72 chars
+
+EOF
+            echo -e "${GREEN}✓ Commit template prepared for $TASK_ID${NC}" >&2
+        else
+            # Existing message - try to inject TASK-XXX intelligently
+            FIRST_LINE=$(echo "$EXISTING_MSG" | head -n 1)
+
+            # Check if first line already has a type prefix
+            if echo "$FIRST_LINE" | grep -qE "^(feat|fix|docs|style|refactor|test|chore):"; then
+                # Has type, add TASK-XXX in parentheses
+                MODIFIED_FIRST=$(echo "$FIRST_LINE" | sed "s/^\([^:]*\):/\1($TASK_ID):/")
+                REST_OF_MSG=$(echo "$EXISTING_MSG" | tail -n +2)
+                cat > "$COMMIT_MSG_FILE" <<EOF
+$MODIFIED_FIRST
+$REST_OF_MSG
+EOF
+                echo -e "${GREEN}✓ Added $TASK_ID reference to commit message${NC}" >&2
+            else
+                # No type prefix - append TASK-XXX reference at the end
+                cat > "$COMMIT_MSG_FILE" <<EOF
+$EXISTING_MSG
+
+Reference: $TASK_ID
+EOF
+                echo -e "${YELLOW}💡 Added $TASK_ID reference. Consider using format: type($TASK_ID): message${NC}" >&2
+            fi
+        fi
+    fi
+elif [[ "$BRANCH_NAME" == feature/* ]] || [[ "$BRANCH_NAME" == fix/* ]] || [[ "$BRANCH_NAME" == refactor/* ]]; then
+    # Feature branch without TASK-XXX in name
+    echo -e "${YELLOW}⚠️  Branch name doesn't include TASK-XXX${NC}" >&2
+    echo -e "${YELLOW}   Recommended format: feature/TASK-XXX-description${NC}" >&2
+fi
+
+exit 0

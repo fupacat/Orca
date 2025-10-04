@@ -1,0 +1,48 @@
+# <emoji> <type>: <subject> (max 50 chars)
+# |<----  Using a Maximum Of 50 Characters  ---->|
+
+# Explain why this change is being made (max 72 chars per line)
+# |<----   Try To Limit Each Line to a Maximum Of 72 Characters   ---->|
+
+# Provide links or keys to any relevant tickets, articles or other resources
+# Example: Fixes #23, Closes #42
+
+# --- COMMIT END ---
+# Type can be:
+#    ✨ feat     (new feature)
+#    🐛 fix      (bug fix)
+#    📚 docs     (changes to documentation)
+#    💄 style    (formatting, missing semi colons, etc; no code change)
+#    ♻️  refactor (refactoring production code)
+#    ✅ test     (adding missing tests, refactoring tests; no production code change)
+#    🔧 chore    (updating grunt tasks etc; no production code change)
+#    ⚡ perf     (performance improvements)
+#    🔒 security (security improvements)
+#    🚀 deploy   (deployment changes)
+#    🔀 merge    (merge branches)
+#    ⏪ revert   (revert previous commit)
+#
+# Remember:
+#   - Use imperative mood in subject line ("Add feature" not "Added feature")
+#   - Do not end subject line with period
+#   - Capitalize subject line
+#   - Separate subject from body with blank line
+#   - Use body to explain what and why vs. how
+#   - Reference issues and pull requests liberally after the body
+#
+# Orca-specific:
+#   - Add "Co-Authored-By: Claude <noreply@anthropic.com>" for Claude Code contributions
+#   - Use TASK-XXX markers when implementing from execution plans
+#   - Include test coverage info for significant changes
+#
+# Example:
+# ✨ feat: Add state tracking data models
+#
+# Implement Pydantic V2 models for TaskState, FileState, and CommitState
+# to enable comprehensive state tracking across git, filesystem, and Archon.
+#
+# Test coverage: 100% (15/15 tests passing)
+# Closes TASK-001
+#
+# 🤖 Generated with Claude Code
+# Co-Authored-By: Claude <noreply@anthropic.com>

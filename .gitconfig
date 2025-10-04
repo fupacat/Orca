@@ -1,0 +1,179 @@
+# Orca Project Git Configuration
+# This file contains project-specific git settings
+
+[core]
+	# Use LF line endings in repository, auto-convert on checkout
+	autocrlf = input
+	eol = lf
+
+	# Editor for commit messages (falls back to system default)
+	# editor = code --wait
+
+	# Exclude file for project-specific ignores
+	excludesfile = .gitignore
+
+	# Enable file system cache for better performance on Windows
+	fscache = true
+
+	# Protect against corruption
+	fsyncObjectFiles = true
+
+[pull]
+	# Always rebase when pulling to maintain linear history
+	rebase = true
+
+[push]
+	# Push current branch to remote branch of same name
+	default = current
+
+	# Push tags along with commits
+	followTags = true
+
+	# Verify all pushed commits
+	verify = true
+
+[merge]
+	# Use VSCode or similar as merge tool
+	tool = vscode
+
+	# Keep original file during conflicts
+	keepBackup = false
+
+	# Show common ancestor in conflict markers
+	conflictStyle = diff3
+
+[mergetool "vscode"]
+	cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
+	trustExitCode = true
+
+[diff]
+	# Better diff algorithm
+	algorithm = histogram
+
+	# Detect renames and copies
+	renames = copies
+
+	# Show submodule changes in summary
+	submodule = log
+
+	# Use VSCode for diffs
+	tool = vscode
+
+[difftool "vscode"]
+	cmd = code --wait --diff $LOCAL $REMOTE
+
+[commit]
+	# Show diff in commit message editor
+	verbose = true
+
+	# Use commit message template
+	template = .gitmessage
+
+	# Sign commits (optional - requires GPG setup)
+	# gpgsign = true
+
+[log]
+	# Show commit signatures in log
+	showSignature = false
+
+	# Abbreviate commit hashes to 12 characters
+	abbrevCommit = true
+
+	# Show dates in relative format
+	date = relative
+
+[status]
+	# Show individual files in untracked directories
+	showUntrackedFiles = all
+
+	# Show submodule summary
+	submoduleSummary = true
+
+[color]
+	# Enable colored output
+	ui = auto
+	branch = auto
+	diff = auto
+	status = auto
+
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green
+
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+
+[color "status"]
+	added = green
+	changed = yellow
+	untracked = red
+
+[alias]
+	# Common shortcuts
+	st = status -sb
+	co = checkout
+	br = branch
+	ci = commit
+	unstage = reset HEAD --
+	last = log -1 HEAD
+
+	# Pretty logs
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	lga = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all
+
+	# Show files in a commit
+	show-files = diff-tree --no-commit-id --name-only -r
+
+	# List aliases
+	aliases = config --get-regexp alias
+
+	# Undo last commit but keep changes
+	undo = reset --soft HEAD^
+
+	# Amend last commit
+	amend = commit --amend --no-edit
+
+	# Quick commit with message
+	qc = "!f() { git add -A && git commit -m \"$1\"; }; f"
+
+	# Stash with message
+	stash-save = stash save
+
+	# Show changed files
+	changed = diff --name-only
+
+	# Show contributors
+	contributors = shortlog --summary --numbered --email
+
+[fetch]
+	# Prune deleted remote branches
+	prune = true
+
+	# Prune tags
+	pruneTags = true
+
+[rebase]
+	# Automatically stash before rebase
+	autoStash = true
+
+	# Automatically squash fixup commits
+	autoSquash = true
+
+[help]
+	# Correct typos automatically
+	autocorrect = 10
+
+[rerere]
+	# Remember resolved conflicts
+	enabled = true
+
+[branch]
+	# Show tracking info in status
+	autoSetupMerge = always
+
+	# Rebase when pulling
+	autoSetupRebase = always

@@ -128,10 +128,62 @@ All Orca projects include comprehensive GitHub integration:
 - Git configured with user name and email
 - Internet connectivity for GitHub operations
 
+## Git Workflow
+
+Orca uses the **Orca-Archon Hybrid Git Workflow** that integrates Archon MCP task management with GitHub Flow.
+
+### Branch Structure
+- **`main`** - Production code (protected)
+- **`develop`** - Default integration branch (protected)
+- **`feature/TASK-XXX-description`** - Feature branches from Archon tasks
+
+### Quick Start
+```bash
+# Activate git hooks (one-time setup)
+git config core.hooksPath .githooks
+
+# Create feature branch from Archon task
+./scripts/git-helpers/create-feature-branch.sh  # OR: Ctrl+Shift+A T
+
+# Commit with TASK-XXX reference
+git commit -m "feat(TASK-XXX): Your change"
+
+# Create pull request
+./scripts/git-helpers/finish-feature.sh  # OR: Ctrl+Shift+A F
+```
+
+### Branch Naming Convention
+```
+<type>/TASK-XXX-<description>
+
+Examples:
+  feature/TASK-005-parallel-orchestration
+  fix/TASK-012-memory-leak
+  refactor/TASK-023-simplify-config
+```
+
+### Commit Format
+```
+<type>(TASK-XXX): <subject>
+
+Examples:
+  feat(TASK-005): Add parallel orchestration
+  fix(TASK-012): Resolve memory leak
+  docs: Update documentation (no TASK-XXX required)
+```
+
+### Documentation
+- **Complete Workflow:** [.github/WORKFLOW.md](.github/WORKFLOW.md)
+- **Quick Reference:** [.github/QUICK_REFERENCE.md](.github/QUICK_REFERENCE.md)
+- **Helper Scripts:** [scripts/git-helpers/README.md](scripts/git-helpers/README.md)
+
 ## Development Notes
 
 This is a configuration-driven system with no traditional build process. The workflow is initiated through the Orca slash commands:
-- `/orca-start` - Execute workflow on existing projects
+- `/orca-start` - Execute workflow on existing projects → produces `plan.md`
+- `/orca-add-feature` - Add feature to existing project → produces `feature_plan.md`
+- `/orca-plan-to-tasks` - Convert plan to structured tasks → produces `execution_plan.md`
+- `/orca-execute` - Execute structured plan with parallel agents
 - `/orca-new` - Create new project with optional GitHub setup
 - `/orca-workflow` - Complete end-to-end: create + setup + workflow
 

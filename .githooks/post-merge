@@ -1,0 +1,102 @@
+#!/bin/bash
+#
+# Post-merge hook for Orca project
+# Auto-updates Archon task status after merging to develop/main
+#
+
+SQUASH_MERGE=$1
+
+# Colors
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Get current branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+
+# Only process merges into develop or main
+if [[ "$CURRENT_BRANCH" != "develop" ]] && [[ "$CURRENT_BRANCH" != "main" ]]; then
+    exit 0
+fi
+
+# Get the last commit message (should contain TASK-XXX if from feature branch)
+LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
+
+# Extract TASK-XXX from commit message
+if echo "$LAST_COMMIT_MSG" | grep -q "TASK-[0-9]\{3\}"; then
+    TASK_ID=$(echo "$LAST_COMMIT_MSG" | grep -o "TASK-[0-9]\{3\}" | head -n 1)
+
+    echo ""
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${GREEN}✓ Merged commit with $TASK_ID into $CURRENT_BRANCH${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "${YELLOW}📋 Post-Merge Actions:${NC}"
+    echo -e "   Task ID: $TASK_ID"
+    echo -e "   Target Branch: $CURRENT_BRANCH"
+    echo ""
+
+    if [[ "$CURRENT_BRANCH" == "develop" ]]; then
+        echo -e "${YELLOW}🔔 Recommended: Update $TASK_ID to 'review' status${NC}"
+        echo -e "   The task has been merged to develop and is ready for testing"
+    elif [[ "$CURRENT_BRANCH" == "main" ]]; then
+        echo -e "${YELLOW}🔔 Recommended: Update $TASK_ID to 'done' status${NC}"
+        echo -e "   The task has been merged to main (production)"
+    fi
+
+    echo ""
+    echo -e "${YELLOW}💡 Next Steps:${NC}"
+    echo -e "   1. Update Archon task status via MCP"
+    echo -e "   2. Create version snapshot if needed"
+    echo -e "   3. Notify team of completion"
+    echo ""
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+
+    # Future: Auto-update Archon task status
+    # if [[ "$CURRENT_BRANCH" == "develop" ]]; then
+    #     claude mcp archon manage_task update --task-id "$TASK_ID" --status review
+    # elif [[ "$CURRENT_BRANCH" == "main" ]]; then
+    #     claude mcp archon manage_task update --task-id "$TASK_ID" --status done
+    #     # Create version snapshot
+    #     claude mcp archon manage_version create --project-id "$PROJECT_ID" \
+    #         --field-name "implementation" --change-summary "Completed $TASK_ID"
+    # fi
+fi
+
+# Check for workflow artifacts to archive
+ARTIFACT_COUNT=0
+ARTIFACTS=""
+
+# Detect workflow artifacts in root
+if ls feature_*.md 1> /dev/null 2>&1; then
+    ARTIFACT_COUNT=$((ARTIFACT_COUNT + $(ls -1 feature_*.md 2>/dev/null | wc -l)))
+    ARTIFACTS="$ARTIFACTS feature_*.md"
+fi
+if ls impl_*.md 1> /dev/null 2>&1; then
+    ARTIFACT_COUNT=$((ARTIFACT_COUNT + $(ls -1 impl_*.md 2>/dev/null | wc -l)))
+    ARTIFACTS="$ARTIFACTS impl_*.md"
+fi
+if ls *_impl_plan.md 1> /dev/null 2>&1; then
+    ARTIFACT_COUNT=$((ARTIFACT_COUNT + $(ls -1 *_impl_plan.md 2>/dev/null | wc -l)))
+    ARTIFACTS="$ARTIFACTS *_impl_plan.md"
+fi
+
+if [ "$ARTIFACT_COUNT" -gt 0 ]; then
+    echo ""
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}📦 Workflow Artifacts Detected${NC}"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "   Found ${YELLOW}$ARTIFACT_COUNT${NC} workflow artifact(s) in root directory"
+    echo -e "   Files: $ARTIFACTS"
+    echo ""
+    echo -e "${YELLOW}💡 Suggestion:${NC} Archive completed workflows to keep root clean"
+    echo -e "   Run: ${BLUE}bash scripts/archive-workflow.sh${NC}"
+    echo ""
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+fi
+
+exit 0
