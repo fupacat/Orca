@@ -1,0 +1,201 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Test: All",
+      "type": "shell",
+      "command": "pytest",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Test: Unit",
+      "type": "shell",
+      "command": "pytest -m unit -v",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Test: Integration",
+      "type": "shell",
+      "command": "pytest -m integration -v",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Test: Coverage Report",
+      "type": "shell",
+      "command": "pytest --cov=src --cov-report=html --cov-report=term-missing",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Format: Black + isort",
+      "type": "shell",
+      "command": "black src tests && isort src tests",
+      "group": "build",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Lint: Pylint",
+      "type": "shell",
+      "command": "pylint src tests",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": {
+        "owner": "python",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+):(\\d+):(\\d+):\\s+(\\w+):\\s+(.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
+    },
+    {
+      "label": "Type Check: Mypy",
+      "type": "shell",
+      "command": "mypy src",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": {
+        "owner": "python",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+):(\\d+):\\s+(error|warning|note):\\s+(.+)$",
+          "file": 1,
+          "line": 2,
+          "severity": 3,
+          "message": 4
+        }
+      }
+    },
+    {
+      "label": "Security: Bandit",
+      "type": "shell",
+      "command": "bandit -r src -f json -o bandit-report.json && echo 'Security scan complete. Check bandit-report.json'",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Quality: Full Check",
+      "type": "shell",
+      "command": "black src tests && isort src tests && pylint src tests && mypy src && bandit -r src",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Pre-commit: All Files",
+      "type": "shell",
+      "command": "pre-commit run --all-files",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Orca: Startup Check",
+      "type": "shell",
+      "command": "echo 'Run /orca-startup in Claude Code'",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Orca: Dependency Check",
+      "type": "shell",
+      "command": "echo 'Run /orca-deps in Claude Code'",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Install: Dev Dependencies",
+      "type": "shell",
+      "command": "pip install -e .[dev]",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Install: Test Dependencies",
+      "type": "shell",
+      "command": "pip install -e .[test]",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Install: Quality Dependencies",
+      "type": "shell",
+      "command": "pip install -e .[quality]",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Coverage: Open HTML Report",
+      "type": "shell",
+      "command": "start htmlcov/index.html",
+      "windows": {
+        "command": "start htmlcov/index.html"
+      },
+      "linux": {
+        "command": "xdg-open htmlcov/index.html"
+      },
+      "osx": {
+        "command": "open htmlcov/index.html"
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "silent"
+      }
+    }
+  ]
+}

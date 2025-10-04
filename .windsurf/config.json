@@ -1,0 +1,172 @@
+{
+  "name": "Orca Development Execution System",
+  "description": "Multi-agent workflow orchestration system with parallel execution capabilities",
+  "language": "python",
+  "version": "1.0.0",
+  
+  "settings": {
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.diagnosticMode": "workspace",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.linting.banditEnabled": true,
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": ["--line-length", "120"],
+    "python.sortImports.args": ["--profile", "black"],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": [
+      "tests",
+      "-v",
+      "--tb=short"
+    ],
+    
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    },
+    "editor.rulers": [120],
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/.pytest_cache": true,
+      "**/.mypy_cache": true,
+      "**/htmlcov": true,
+      "**/.coverage": true
+    },
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/node_modules/*/**": true,
+      "**/.venv/**": true,
+      "**/htmlcov/**": true
+    }
+  },
+  
+  "tasks": {
+    "test": {
+      "command": "pytest",
+      "description": "Run all tests with coverage"
+    },
+    "test:unit": {
+      "command": "pytest -m unit",
+      "description": "Run unit tests only"
+    },
+    "test:integration": {
+      "command": "pytest -m integration",
+      "description": "Run integration tests only"
+    },
+    "lint": {
+      "command": "pylint src tests",
+      "description": "Run pylint on source and tests"
+    },
+    "type-check": {
+      "command": "mypy src",
+      "description": "Run mypy type checking"
+    },
+    "format": {
+      "command": "black src tests && isort src tests",
+      "description": "Format code with black and isort"
+    },
+    "security": {
+      "command": "bandit -r src -f json -o bandit-report.json",
+      "description": "Run security checks with bandit"
+    },
+    "quality": {
+      "command": "black src tests && isort src tests && pylint src tests && mypy src && bandit -r src",
+      "description": "Run all quality checks"
+    },
+    "coverage": {
+      "command": "pytest --cov=src --cov-report=html --cov-report=term",
+      "description": "Generate coverage report"
+    },
+    "pre-commit": {
+      "command": "pre-commit run --all-files",
+      "description": "Run pre-commit hooks on all files"
+    }
+  },
+  
+  "dependencies": {
+    "mcpServers": {
+      "archon": {
+        "type": "http",
+        "url": "http://localhost:8051/mcp",
+        "description": "Task and project management, knowledge base integration"
+      },
+      "serena": {
+        "type": "stdio",
+        "command": "uvx",
+        "args": ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--context", "ide-assistant", "--project", "${workspaceFolder}"],
+        "description": "Semantic code operations and project context"
+      }
+    }
+  },
+  
+  "workflows": {
+    "startup": {
+      "description": "System health check and verification",
+      "command": "/orca-startup"
+    },
+    "deps": {
+      "description": "Quick MCP server validation",
+      "command": "/orca-deps"
+    },
+    "execute": {
+      "description": "Execute implementation plans with parallel orchestration",
+      "command": "/orca-execute"
+    }
+  },
+  
+  "ai": {
+    "context": {
+      "include": [
+        "README.md",
+        "CLAUDE.md",
+        "archon_rules.md",
+        "pyproject.toml",
+        "src/**/*.py",
+        "tests/**/*.py",
+        "templates/**/*.md"
+      ],
+      "exclude": [
+        "htmlcov/**",
+        ".pytest_cache/**",
+        "__pycache__/**",
+        "*.pyc",
+        ".coverage",
+        "bandit-report.json",
+        "safety-report.json"
+      ]
+    },
+    "rules": [
+      "Follow Archon-first development: check Archon MCP availability before any task",
+      "Use Archon for ALL project and task management",
+      "Research using Archon RAG before implementation",
+      "Maintain stateless agent architecture",
+      "All code must pass 95% coverage threshold",
+      "Follow strict type checking with mypy",
+      "Use black formatting with 120 character line length",
+      "Run security checks with bandit before commits"
+    ],
+    "codeStyle": {
+      "lineLength": 120,
+      "formatter": "black",
+      "linter": "pylint",
+      "typeChecker": "mypy",
+      "importSorter": "isort"
+    }
+  },
+  
+  "extensions": {
+    "recommended": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter",
+      "ms-python.isort",
+      "charliermarsh.ruff"
+    ]
+  }
+}
