@@ -86,11 +86,23 @@ class WorkflowIntegrator:
             # Step 2: Initialize MCP connections
             await self.mcp_manager.initialize()
 
-            # Step 3: Generate complete tasks from plan
+            # Step 3: Read and parse plan file
+            import json
+            self.logger.info(f"Reading plan file: {plan_file}")
+            plan_content = plan_file.read_text(encoding='utf-8')
+
+            # Convert markdown plan to dict format expected by parser
+            # For now, pass the file path for the parser to handle
+            implementation_plan = {
+                "plan_path": str(plan_file),
+                "plan_content": plan_content
+            }
+
+            # Generate complete tasks from plan
             self.logger.info("Generating complete task contexts from plan")
             complete_tasks = await self.task_generator.generate_complete_tasks_from_plan(
-                str(plan_file),
-                project_root=str(self.project_root)
+                implementation_plan,
+                project_context={"project_root": str(self.project_root)}
             )
 
             if not complete_tasks:

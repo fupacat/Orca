@@ -25,6 +25,22 @@ Desktop.ini
 # Keep Claude Code project configuration
 # .claude/ is intentionally tracked for project setup
 
+# Keep Windsurf IDE configuration
+# .windsurf/ is intentionally tracked for project setup
+
+# Archive directory (keep structure, ignore most contents)
+.archive/**/*.md
+.archive/workflows/**
+.archive/executions/**
+.archive/plans/**
+!.archive/README.md
+
+# Workflow artifacts in root (should be archived)
+feature_*.md
+impl_*.md
+*_impl_plan.md
+execute_*.py
+
 # MCP Server Data (runtime only)
 .serena/cache/
 .serena/temp/

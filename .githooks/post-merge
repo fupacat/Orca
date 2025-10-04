@@ -65,4 +65,38 @@ if echo "$LAST_COMMIT_MSG" | grep -q "TASK-[0-9]\{3\}"; then
     # fi
 fi
 
+# Check for workflow artifacts to archive
+ARTIFACT_COUNT=0
+ARTIFACTS=""
+
+# Detect workflow artifacts in root
+if ls feature_*.md 1> /dev/null 2>&1; then
+    ARTIFACT_COUNT=$((ARTIFACT_COUNT + $(ls -1 feature_*.md 2>/dev/null | wc -l)))
+    ARTIFACTS="$ARTIFACTS feature_*.md"
+fi
+if ls impl_*.md 1> /dev/null 2>&1; then
+    ARTIFACT_COUNT=$((ARTIFACT_COUNT + $(ls -1 impl_*.md 2>/dev/null | wc -l)))
+    ARTIFACTS="$ARTIFACTS impl_*.md"
+fi
+if ls *_impl_plan.md 1> /dev/null 2>&1; then
+    ARTIFACT_COUNT=$((ARTIFACT_COUNT + $(ls -1 *_impl_plan.md 2>/dev/null | wc -l)))
+    ARTIFACTS="$ARTIFACTS *_impl_plan.md"
+fi
+
+if [ "$ARTIFACT_COUNT" -gt 0 ]; then
+    echo ""
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}📦 Workflow Artifacts Detected${NC}"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "   Found ${YELLOW}$ARTIFACT_COUNT${NC} workflow artifact(s) in root directory"
+    echo -e "   Files: $ARTIFACTS"
+    echo ""
+    echo -e "${YELLOW}💡 Suggestion:${NC} Archive completed workflows to keep root clean"
+    echo -e "   Run: ${BLUE}bash scripts/archive-workflow.sh${NC}"
+    echo ""
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+fi
+
 exit 0
